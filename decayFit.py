@@ -8,13 +8,14 @@ Created on Tue Apr  2 17:52:32 2013
 import ROOT
 import sys
 import math 
+import pathfinder
 
 class fidfit:
     def __init__(self):
-        ROOT.gSystem.Load("/home/bernd/programme/TWaveform/lib/libWaveWaveBase")
+        ROOT.gSystem.Load(pathfinder.libWaveWaveBase)
 
     def importfile(self):
-        self.rootfile=input("rootfile: ")
+        self.rootfile=raw_input("rootfile: ")
         self.file=ROOT.TFile(self.rootfile)
         entry=int(input("channelnum: "))
         self.file.sisDec.GetEntry(entry)
