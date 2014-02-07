@@ -14,9 +14,16 @@ class fidfit:
     def __init__(self):
         ROOT.gSystem.Load(pathfinder.libWaveWaveBase)
 
+    def importfilemanually(self):
+	self.rootfile=raw_input("rootfile: ")
+	self.file=ROOT.TFile(self.rootfile)
+	entry=int(input("channelnum: "))
+	self.file.sisDec.GetEntry(entry)
+	self.data=self.file.sisDec.wf.GimmeHist()
     def importfile(self):
-        self.rootfile=raw_input("rootfile: ")
-        self.file=ROOT.TFile(self.rootfile)
+        self.rootfileshort=raw_input("rootfile: ")
+        self.rootfile=pathfinder.ROOTFileFolder+self.rootfileshort
+	self.file=ROOT.TFile(self.rootfile)
         entry=int(input("channelnum: "))
         self.file.sisDec.GetEntry(entry)
         self.data=self.file.sisDec.wf.GimmeHist()
