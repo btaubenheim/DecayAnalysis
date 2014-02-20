@@ -14,6 +14,7 @@ class fidfit:
     def __init__(self):
         ROOT.gSystem.Load(pathfinder.libWaveWaveBase)
 	self.rootfile=''
+	self.data=None	
 
     def importfilemanually(self):
 	self.rootfile=raw_input("rootfile: ")
@@ -29,6 +30,10 @@ class fidfit:
         self.file.sisDec.GetEntry(entry)
         self.data=self.file.sisDec.wf.GimmeHist()
     def loadfile(self):
+	if self.rootfile:
+		print "this rootfile is used: "+self.rootfile
+	else:
+		return
 	self.file=ROOT.TFile(self.rootfile)
         entry=int(input("channelnum: "))
         self.file.sisDec.GetEntry(entry)
@@ -38,7 +43,7 @@ class fidfit:
     def fit(self):
         #todo: implement possibillity to make this scipt-callable (no manual inputs)
         c2=ROOT.TCanvas()
-        c2.Update()
+  #      c2.Update()
         self.data.Draw()
         print("enter starting values for the fit")
         offs=float(input("offset= "))
@@ -48,21 +53,21 @@ class fidfit:
         fitwinstart=float(input("fitwindow starting pont: "))
         fitwinend=float(input("fitwindow ending point: "))
         f1=ROOT.TF1("f1", "[5]+[0]*sin(x*[1]*2*[4]+[3])*exp(-x/[2])", fitwinstart, fitwinend)
-        f1.SetParNames("Initial amplitude","larmor freq", "T2","Initial Phase","Pi")
-        f1.SetParLimits(0,ampl-ampl/5.,ampl+ampl/5.)
+        f1.SetParNames("Initial amplitude","larmor freq", "T2","Initial Phase","Pi","offset")
+        f1.SetParLimits(0,ampl-ampl/2.,ampl+ampl/2.)
         f1.SetParameter(0, ampl)
-        f1.SetParLimits(1, larmor-larmor/3., larmor+larmor/3.)
+        f1.SetParLimits(1, larmor-larmor/2., larmor+larmor/2.)
         f1.SetParameter(1, larmor)
-        f1.SetParLimits(2, T2-T2/5., T2+T2/5.)
+        f1.SetParLimits(2, T2-T2/2., T2+T2/2.)
         f1.SetParameter(5, offs)
-        f1.SetParLimits(5,offs-offs/5., offs+offs/5.)
+        f1.SetParLimits(5,offs-offs/2., offs+offs/2.)
         f1.FixParameter(4, math.pi)
-        self.data.Fit(f1,"Q,M","LEGO", fitwinstart, fitwinend)
+        self.data.Fit(f1,"Q,M","SAME", fitwinstart, fitwinend)
         self.pars=f1.GetParameters()
         print self.pars[0], self.pars[1], self.pars[2], self.pars[3], self.pars[4], self.pars[5]
       #  f1.Draw()  
         self.data.Draw() 
-        raw_input("lkjhgfdx")
+        #raw_input("lkjhgfdx")
         c2.Modified() 
         c2.Update()
         raw_input("jump")
