@@ -22,6 +22,7 @@ class fidfit:
 	entry=int(input("channelnum: "))
 	self.file.sisDec.GetEntry(entry)
 	self.data=self.file.sisDec.wf.GimmeHist()
+
     def importfile(self):
         self.rootfileshort=raw_input("rootfile: ")
         self.rootfile=pathfinder.ROOTFileFolder+self.rootfileshort
@@ -29,6 +30,7 @@ class fidfit:
         entry=int(input("channelnum: "))
         self.file.sisDec.GetEntry(entry)
         self.data=self.file.sisDec.wf.GimmeHist()
+
     def loadfile(self):
 	if self.rootfile:
 		print "this rootfile is used: "+self.rootfile
@@ -38,13 +40,15 @@ class fidfit:
         entry=int(input("channelnum: "))
         self.file.sisDec.GetEntry(entry)
         self.data=self.file.sisDec.wf.GimmeHist()
+
+    def load_TWaveform(self, w):
+        """Directly load TWaveform from Memory"""
+        self.data = w.GimmeHist()
+
  #   def findparams(self):
  #       self.data.
-    def fit(self):
-        #todo: implement possibillity to make this scipt-callable (no manual inputs)
-        c2=ROOT.TCanvas()
-  #      c2.Update()
-        self.data.Draw()
+
+    def manual_fit(self):
         print("enter starting values for the fit")
         offs=float(input("offset= "))
         ampl=float(input("amplitude= "))
@@ -52,6 +56,12 @@ class fidfit:
         T2=float(input("decay lifetime= "))
         fitwinstart=float(input("fitwindow starting pont: "))
         fitwinend=float(input("fitwindow ending point: "))
+        raw_input("jump")
+        print self.pars[0], self.pars[1], self.pars[2], self.pars[3], self.pars[4], self.pars[5]
+
+    def fit(self, offs, ampl, larmor, T2, fitwinstart, fitwinend):
+        c2=ROOT.TCanvas()
+        self.data.Draw()
         f1=ROOT.TF1("f1", "[5]+[0]*sin(x*[1]*2*[4]+[3])*exp(-x/[2])", fitwinstart, fitwinend)
         f1.SetParNames("Initial amplitude","larmor freq", "T2","Initial Phase","Pi","offset")
         f1.SetParLimits(0,ampl-ampl/2.,ampl+ampl/2.)
@@ -64,13 +74,11 @@ class fidfit:
         f1.FixParameter(4, math.pi)
         self.data.Fit(f1,"Q,M","SAME", fitwinstart, fitwinend)
         self.pars=f1.GetParameters()
-        print self.pars[0], self.pars[1], self.pars[2], self.pars[3], self.pars[4], self.pars[5]
-      #  f1.Draw()  
         self.data.Draw() 
-        #raw_input("lkjhgfdx")
         c2.Modified() 
         c2.Update()
-        raw_input("jump")
+        return (f1, c2)
+
     def fft(self):
          wf=self.file.sisDec.wf
          #wf=self.data
@@ -86,11 +94,11 @@ class fidfit:
          ROOT.TFastFourierTransformFFTW.GetFFT(sub.GetLength()).PerformFFT(sub, fft)
          fft.GimmeHist("", "Abs").Draw()
          raw_input("jump")
+
 def main():
     c=fidfit()
     c.importfile()
-    c.fit()
+    c.manual_fit()
     #c.fft()
 if __name__ == "__main__":
     main()
-        
