@@ -1,0 +1,5 @@
+libPyOrcaROOT="~/software/OrcaROOT/Bindings/libPyOrcaROOT"
+libWaveWaveBase="~/software/TWaveform/lib/libWaveWaveBase"
+OrcaFileFolder="/Volumes/HgLaser/Data/Orca"
+ROOTFileFolder="/Volumes/HgLaser/Data/Rootified/"
+TxtFileFolder="/Volumes/HgLaser/Data/Txtified/"
