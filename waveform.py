@@ -44,3 +44,20 @@ class Waveform:
 
     def copy(self):
         return deepcopy(self)
+
+    def to_TWaveform(self):
+        """Create ROOT/OrcaROOT TWaveform object from waveform,
+        which can for example be used for fitting."""
+        import ROOT
+        ROOT.gSystem.Load("libWaveWaveBase")
+        w = ROOT.TDoubleWaveform(self.samples, len(self.samples))
+        w.SetSamplingFreq(self.samplerate*ROOT.CLHEP.second)
+        return w
+
+if __name__ == '__main__':
+    from decayingsine import DecayingSine
+    s = DecayingSine(7, 2, 10, 1e5)
+    s.add_noise(.4)
+    w = s.to_TWaveform()
+    w.GimmeHist().Draw()
+    raw_input("Press enter to continue...")
