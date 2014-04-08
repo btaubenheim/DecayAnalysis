@@ -17,9 +17,14 @@ class Waveform:
         self.samples += offset
         return self
 
-    def add_noise(self, a):
+    def add_uniform_noise(self, a):
         "Adds white noise with amplitude *a* to the signal"
-        self.samples += a*random.rand(self.samples.shape[0])
+        self.samples += random.uniform(-a, a, self.samples.shape[0])
+        return self
+
+    def add_gauss_noise(self, a):
+        "Adds white noise with amplitude *a* to the signal"
+        self.samples += random.normal(0, a, self.samples.shape[0])
         return self
 
     def __lfilter(self, b, a):
@@ -49,7 +54,8 @@ class Waveform:
         """Create ROOT/OrcaROOT TWaveform object from waveform,
         which can for example be used for fitting."""
         import ROOT
-        ROOT.gSystem.Load("libWaveWaveBase")
+        import pathfinder
+        ROOT.gSystem.Load(pathfinder.libWaveWaveBase)
         w = ROOT.TDoubleWaveform(self.samples, len(self.samples))
         w.SetSamplingFreq(self.samplerate*ROOT.CLHEP.second)
         return w
@@ -57,7 +63,7 @@ class Waveform:
 if __name__ == '__main__':
     from decayingsine import DecayingSine
     s = DecayingSine(7, 2, 10, 1e5)
-    s.add_noise(.4)
+    s.add_gauss_noise(.1)
     w = s.to_TWaveform()
     w.GimmeHist().Draw()
     raw_input("Press enter to continue...")

@@ -11,6 +11,8 @@ import math
 import pathfinder
 
 class fidfit:
+    result_names = ('amplitude', 'frequency', 'tau', 'phase', 'pi', 'offset')
+
     def __init__(self):
         ROOT.gSystem.Load(pathfinder.libWaveWaveBase)
 	self.rootfile=''
@@ -60,8 +62,8 @@ class fidfit:
         print self.pars[0], self.pars[1], self.pars[2], self.pars[3], self.pars[4], self.pars[5]
 
     def fit(self, offs, ampl, larmor, T2, fitwinstart, fitwinend):
-        c2=ROOT.TCanvas()
-        self.data.Draw()
+        #c2=ROOT.TCanvas()
+        #self.data.Draw()
         f1=ROOT.TF1("f1", "[5]+[0]*sin(x*[1]*2*[4]+[3])*exp(-x/[2])", fitwinstart, fitwinend)
         f1.SetParNames("Initial amplitude","larmor freq", "T2","Initial Phase","Pi","offset")
         f1.SetParLimits(0,ampl-ampl/2.,ampl+ampl/2.)
@@ -74,10 +76,10 @@ class fidfit:
         f1.FixParameter(4, math.pi)
         self.data.Fit(f1,"Q,M","SAME", fitwinstart, fitwinend)
         self.pars=f1.GetParameters()
-        self.data.Draw() 
-        c2.Modified() 
-        c2.Update()
-        return (f1, c2)
+        #self.data.Draw() 
+        #c2.Modified() 
+        #c2.Update()
+        return f1
 
     def fft(self):
          wf=self.file.sisDec.wf
